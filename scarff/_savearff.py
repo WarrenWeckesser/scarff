@@ -2,12 +2,10 @@
 
 import numpy as np
 try:
-    _have_scipy = True
-    from scipy.sparse import issparse as issparse
+    from scipy.sparse import issparse
 except ImportError:
-    def _issparse(a):
+    def issparse(a):
         return False
-    _have_scipy = False
 
 from ._flatten_dtype import flatten_dtype
 from ._javadate import java_date_format_to_strftime
@@ -498,7 +496,7 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         missing = []
 
     if fileformat is None:
-        if _have_scipy and issparse(a):
+        if issparse(a):
             fileformat = 'sparse'
         else:
             fileformat = 'dense'
@@ -610,7 +608,7 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         write_data = _write_dense_data
 
     if issparse(a):
-        # Scipy sparse array.  Densify one row at a time.
+        # SciPy sparse array.  Densify one row at a time.
         for k in range(a.shape[0]):
             row = a.getrow(k).A
             write_data(f, row, types=types, missing=missing)
