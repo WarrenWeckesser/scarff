@@ -13,7 +13,7 @@ Initial imports::
     >>> from scarff import savearff
 
 A 2-d array of integers; we'll assign each column an attribute name
-with the `attributes` parameter::
+with the ``attributes`` parameter::
 
     >>> a = np.array([[1, 2, 3], [9, 7, 6], [2, 2, 8], [4, 2, 3]])
     >>> savearff(sys.stdout, a, attributes=['x0', 'y0', 'z0'],
