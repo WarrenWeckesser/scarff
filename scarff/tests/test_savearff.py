@@ -3,8 +3,13 @@
 
 import io
 import numpy as np
+import pytest
 from numpy.testing import assert_equal, assert_array_equal
-from scipy.sparse import csr_matrix
+try:
+    _have_scipy = True
+    from scipy.sparse import csr_matrix
+except ImportError:
+    _have_scipy = False
 from scarff import savearff
 from .parsearff import parsearff
 
@@ -36,6 +41,7 @@ class TestSaveArff:
         assert_array_equal(data, [[("%g" % value) for value in row]
                                   for row in x])
 
+    @pytest.mark.skipif(not _have_scipy, reason="SciPy not installed")
     def test_sparse_matrix(self):
         s = csr_matrix([[10, 0, 0, 20], [0, 0, 0, 0], [0, 30, 0, 0]])
 
