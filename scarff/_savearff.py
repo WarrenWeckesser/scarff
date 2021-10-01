@@ -1,5 +1,6 @@
 # Copyright © 2021 Warren Weckesser
 
+import datetime
 import numpy as np
 try:
     from scipy.sparse import issparse
@@ -157,19 +158,21 @@ _fmt_map = {'integer': "%i",
             'real': "%g",
             'string': '"%s"',
             'nominal': '"%s"',
-            'date': '%s'}
+            'date': None}
 
 
 def _format(value, value_type):
-    if isinstance(value, bytes):
-        value = value.decode('latin1')
     if value_type == 'date':
         if isinstance(value, np.datetime64):
-            dt = value.item()
-        else:
+            dt = value.item()  # Convert to datetime.datetime.
+        elif isinstance(value, datetime.datetime):
             dt = value
+        else:
+            raise RuntimeError("don't know how to format {value} as a date.")
         out = _wrap(dt.strftime(_fmt_map['date']))
     else:
+        if isinstance(value, bytes):
+            value = value.decode('latin1')
         out = _fmt_map[value_type] % value
     return out
 
@@ -503,10 +506,13 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
     elif fileformat not in ['sparse', 'dense']:
         raise ValueError(f"unknown fileformat {fileformat}")
 
-    strftime_fmt = None
-    if dateformat is not None:
-        strftime_fmt = java_date_format_to_strftime(dateformat)
-        _fmt_map['date'] = strftime_fmt
+    if dateformat is None:
+        # The SimpleDateFormat for the ISO 8601 combined data and time format:
+        sdf = "yyyy-MM-dd'T'HH:mm:ss"
+    else:
+        sdf = dateformat
+    strftime_fmt = java_date_format_to_strftime(sdf)
+    _fmt_map['date'] = strftime_fmt
 
     # These arguments are only used by passing them on to flatten_dtype().
     flatten_kwargs = dict(join=join,

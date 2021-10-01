@@ -229,7 +229,7 @@ class TestSaveArff:
         assert_equal(relation, rel)
         assert_equal(attributes, ['f0', 'f1', 'f2', 'f3'])
         assert_equal(types[1:], ['integer', 'integer', 'string'])
-        assert_equal(types[0], ['bar', 'cat', 'dog', 'foo'])
+        assert_equal(types[0], ('nominal', ['bar', 'cat', 'dog', 'foo']))
         assert_equal(data, [[str(k) for k in row] for row in x])
 
         f = io.StringIO()
@@ -241,7 +241,7 @@ class TestSaveArff:
         assert_equal(relation, rel)
         assert_equal(attributes, ['f0', 'f1', 'f2', 'f3'])
         assert_equal(types[1:], ['integer', 'integer', 'string'])
-        assert_equal(types[0], f0vals)
+        assert_equal(types[0], ('nominal', f0vals))
         assert_equal(data, [[str(k) for k in row] for row in x])
 
         f = io.StringIO()
@@ -252,6 +252,29 @@ class TestSaveArff:
         assert_equal(relation, rel)
         assert_equal(attributes, ['f0', 'f1', 'f2', 'f3'])
         assert_equal(types[1:], ['integer', 'integer', 'string'])
-        assert_equal(types[0], ['bar', 'cat', 'dog'])
+        assert_equal(types[0], ('nominal', ['bar', 'cat', 'dog']))
         assert_equal(data, [[('?' if k == 'foo' else str(k)) for k in row]
                             for row in x])
+
+    @pytest.mark.parametrize('dateformat',
+                             [None, "MM/dd/yy ('American style')"])
+    def test_date(self, dateformat):
+        d0 = np.datetime64(2**30+12345, 's')
+        d1 = np.datetime64(2**30+92345, 's')
+        a = np.array([[d0]*3,
+                      [d1]*3])
+        f = io.StringIO()
+        savearff(f, a, dateformat=dateformat)
+        contents = f.getvalue()
+
+        relation, attributes, types, data = parsearff(contents)
+        assert relation == 'undefined'
+        assert attributes == ['f0', 'f1', 'f2']
+        if dateformat is None:
+            assert types == ['date', 'date', 'date']
+            assert data == [[str(d0)]*3,
+                            [str(d1)]*3]
+        else:
+            assert types == [('date', dateformat)]*3
+            assert data == [['01/10/04 (American style)']*3,
+                            ['01/11/04 (American style)']*3]

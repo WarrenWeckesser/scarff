@@ -50,14 +50,26 @@ def parsearff(s):
             relation = space_split(line)[1]
             continue
         if uline.startswith('@ATTRIBUTE'):
-            _, attr, typ = space_split(line, maxsplit=2)
+            parts = space_split(line)
+            print(f"parts = {parts}")
+            if len(parts) < 3:
+                raise ValueError(f"Line {linenumber}: incomplete attribute")
+            attr, typ = parts[1:3]
+            if typ == 'date':
+                maxlen = 4
+            else:
+                maxlen = 3
+            if len(parts) > maxlen:
+                raise ValueError(f"Line {linenumber}: invalid attribute line")
             if attr in attributes:
                 raise ValueError(f"The attribute {attr} appears more "
                                  "than once")
             attributes.append(attr)
             typ = typ.strip()
             if typ.startswith('{') and typ.endswith('}'):
-                typ = comma_split(typ[1:-1])
+                typ = ('nominal', comma_split(typ[1:-1]))
+            elif typ.upper() == 'DATE' and len(parts) == 4:
+                typ = ('date', parts[3])
             types.append(typ)
     else:
         raise ValueError("Missing @DATA section")
