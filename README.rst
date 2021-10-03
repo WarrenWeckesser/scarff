@@ -62,6 +62,59 @@ also shows the use of a ``date`` attribute::
     199,2.16,"QXZ55","2011-41-04 02:41:02"
     198,2.32,"QXZ59","2011-28-04 03:28:19"
 
+**Nominal attributes**
+
+ARFF files can have "nominal" attributes, in which the possible
+values are restricted to a given set.  The ``nominal`` parameter
+of ``savearff`` allows a column to be designated as a nominal
+attribute.  The set of possibles values can be derived from the
+set of unique values found in the column, or can be given explicitly.
+For example, here we use ``nominal={'color': True}`` to indicate that
+the ``color`` attribute is nominal; the set of possible values will
+be the set of unique values found in the data (in this case, ``black``,
+``green`` and ``red``)::
+
+    >>> things = [[10, 20, 'a', 'green'],
+    ...           [30, 40, 'b', 'red'],
+    ...           [50, 60, 'b', 'red'],
+    ...           [70, 80, 'c', 'black'],
+    ...           [19, 29, 'c', 'red']]
+    >>> savearff(sys.stdout, things, relation='THINGS',
+    ...          attributes=['x', 'y', 'code', 'color'],
+    ...          nominal={'color': True})
+    @relation THINGS
+
+    @attribute x integer
+    @attribute y integer
+    @attribute code string
+    @attribute color {black,green,red}
+
+    @data
+    10,20,"a","green"
+    30,40,"b","red"
+    50,60,"b","red"
+    70,80,"c","black"
+    19,29,"c","red"
+
+The set of possible values can be given explicitly::
+
+    >>> savearff(sys.stdout, things, relation='THINGS',
+    ...          attributes=['x', 'y', 'code', 'color'],
+    ...          nominal={'color': ['red', 'green', 'blue', 'black', 'white']})
+    @relation THINGS
+
+    @attribute x integer
+    @attribute y integer
+    @attribute code string
+    @attribute color {red,green,blue,black,white}
+
+    @data
+    10,20,"a","green"
+    30,40,"b","red"
+    50,60,"b","red"
+    70,80,"c","black"
+    19,29,"c","red"
+
 **SciPy sparse matrix**
 
 SciPy is not a required dependency of ``scarff``, but ``savearff``
