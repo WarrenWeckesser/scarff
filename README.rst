@@ -88,6 +88,29 @@ A SciPy sparse matrix::
     {3 50, 4 60}
     {}
 
+A regular NumPy array can be written in the sparse format by giving
+the argument ``fileformat='sparse'``::
+
+    >>> sp = np.array([[0, 0, 99, 0, 0],
+    ...                [29, 0, 0, 0, 19],
+    ...                [0, 0, 0, 0, 0],
+    ...                [0, 89, 0, 0, 0]])
+    >>> savearff(sys.stdout, sp, fileformat='sparse',
+    ...          relation='sparse example')
+    @relation "sparse example"
+
+    @attribute f0 integer
+    @attribute f1 integer
+    @attribute f2 integer
+    @attribute f3 integer
+    @attribute f4 integer
+
+    @data
+    {2 99}
+    {0 29, 4 19}
+    {}
+    {1 89}
+
 A NumPy masked array; note that the masked values are converted
 to ``?`` in the ``@data`` section of the output::
 
