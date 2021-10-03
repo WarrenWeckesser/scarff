@@ -87,3 +87,85 @@ A SciPy sparse matrix::
     {}
     {3 50, 4 60}
     {}
+
+A NumPy masked array; note that the masked values are converted
+to ``?`` in the ``@data`` section of the output::
+
+    >>> flux = np.ma.masked_array([[3.4, 2.1, 0.0, 3.4],
+    ...                            [3.2, 4.8, 0.5, 3.7],
+    ...                            [3.3, 2.8, 0.0, 4.1]],
+    ...                           mask=[[0, 0, 1, 0],
+    ...                                 [0, 0, 0, 0],
+    ...                                 [0, 0, 1, 0]])
+    >>> flux
+    masked_array(
+      data=[[3.4, 2.1, --, 3.4],
+            [3.2, 4.8, 0.5, 3.7],
+            [3.3, 2.8, --, 4.1]],
+      mask=[[False, False,  True, False],
+            [False, False, False, False],
+            [False, False,  True, False]],
+      fill_value=1e+20)
+    >>> savearff(sys.stdout, flux, relation='flux capacitance')
+    @relation "flux capacitance"
+
+    @attribute f0 real
+    @attribute f1 real
+    @attribute f2 real
+    @attribute f3 real
+
+    @data
+    3.4,2.1,?,3.4
+    3.2,4.8,0.5,3.7
+    3.3,2.8,?,4.1
+
+A NumPy array with a structured data type with nested and array elements
+in the structure.  ``savearff`` flattens the data type and derives
+attribute names from the structured data type; note how the field names
+in the structured data type are used to produce the attribute names in
+the output::
+
+    >>> dt = np.dtype([('key', 'U4'),
+    ...                ('position', [('x', np.float32), ('y', np.float32)]),
+    ...                ('values', np.float32, 3)])
+    >>> records = np.array([('A234', (1.9, -3.0), (6, 7, 2)),
+    ...                     ('A555', (2.8, 0.6), (4, 2.5, 3)),
+    ...                     ('B431', (2.7, 8.6), (4, 2.8, 0.2))], dtype=dt)
+    >>> savearff(sys.stdout, records, relation='records')
+    @relation records
+
+    @attribute key string
+    @attribute position.x real
+    @attribute position.y real
+    @attribute values_0 real
+    @attribute values_1 real
+    @attribute values_2 real
+
+    @data
+    "A234",1.9,-3,6,7,2
+    "A555",2.8,0.6,4,2.5,3
+    "B431",2.7,8.6,4,2.8,0.2
+
+The above example demonstrates the default method for converting
+structured data type field names to attribute names. ``savearff``
+has several options to change how the names are generated.
+For example::
+
+    >>> savearff(sys.stdout, records, relation='records',
+    ...          join='$', index_base=1, index_open='(', index_close=')')
+    @relation records
+
+    @attribute key string
+    @attribute position$x real
+    @attribute position$y real
+    @attribute values(1) real
+    @attribute values(2) real
+    @attribute values(3) real
+
+    @data
+    "A234",1.9,-3,6,7,2
+    "A555",2.8,0.6,4,2.5,3
+    "B431",2.7,8.6,4,2.8,0.2
+
+Currently ``savearff`` does not implement the generation of "relational"
+attributes.
