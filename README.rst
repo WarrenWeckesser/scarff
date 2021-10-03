@@ -67,7 +67,7 @@ also shows the use of a ``date`` attribute::
 ARFF files can have "nominal" attributes, in which the possible
 values are restricted to a given set.  The ``nominal`` parameter
 of ``savearff`` allows a column to be designated as a nominal
-attribute.  The set of possibles values can be derived from the
+attribute.  The set of possible values can be derived from the
 set of unique values found in the column, or can be given explicitly.
 For example, here we use ``nominal={'color': True}`` to indicate that
 the ``color`` attribute is nominal; the set of possible values will
