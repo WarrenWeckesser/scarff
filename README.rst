@@ -42,25 +42,25 @@ from the names of the fields in the data type.  This example
 also shows the use of a ``date`` attribute::
 
     >>> dt = np.dtype([('id', int), ('strength', float), ('key', 'U8'),
-    ...                ('timestamp', np.dtype(np.datetime64, 's'))
+    ...                ('timestamp', 'datetime64[s]')])
     >>> m = np.array([(233, 1.75, 'QXX34', '2011-05-04T13:12:04'),
     ...               (154, 3.25, 'QXX99', '2011-05-04T13:47:43'),
     ...               (199, 2.16, 'QXZ55', '2011-05-04T14:41:02'),
     ...               (198, 2.32, 'QXZ59', '2011-05-04T15:28:19')], dtype=dt)
     >>> savearff(sys.stdout, m, relation='measurements',
-    ...          dateformat='yyyy-mm-dd hh:mm:ss')
+    ...          dateformat='yyyy-MM-dd HH:mm:ss')
     @relation measurements
 
     @attribute id integer
     @attribute strength real
     @attribute key string
-    @attribute timestamp date "yyyy-mm-dd hh:mm:ss"
+    @attribute timestamp date "yyyy-MM-dd HH:mm:ss"
 
     @data
-    233,1.75,"QXX34","2011-12-04 01:12:04"
-    154,3.25,"QXX99","2011-47-04 01:47:43"
-    199,2.16,"QXZ55","2011-41-04 02:41:02"
-    198,2.32,"QXZ59","2011-28-04 03:28:19"
+    233,1.75,"QXX34","2011-05-04 13:12:04"
+    154,3.25,"QXX99","2011-05-04 13:47:43"
+    199,2.16,"QXZ55","2011-05-04 14:41:02"
+    198,2.32,"QXZ59","2011-05-04 15:28:19"
 
 **Nominal attributes**
 
