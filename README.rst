@@ -3,8 +3,8 @@ scarff
 
 An ARFF file writer that handles NumPy arrays and SciPy sparse matrices.
 
-A few examples
---------------
+Examples
+--------
 
 Initial imports::
 
@@ -12,8 +12,12 @@ Initial imports::
     >>> import numpy as np
     >>> from scarff import savearff
 
-A 2-d array of integers; we'll assign each column an attribute name
-with the ``attributes`` parameter::
+**NumPy array of integers**
+
+``a`` is a 2-d array of integers.  The default attribute names generated
+by ``savearff`` for each column are ``f0``, ``f1``, etc.  Here we
+override that default and assign each column an attribute name with the
+``attributes`` parameter::
 
     >>> a = np.array([[1, 2, 3], [9, 7, 6], [2, 2, 8], [4, 2, 3]])
     >>> savearff(sys.stdout, a, attributes=['x0', 'y0', 'z0'],
@@ -30,11 +34,15 @@ with the ``attributes`` parameter::
     2,2,8
     4,2,3
 
-A structured array, with four fields; the attribute names are
-taken from the names of the fields in the data type::
+**NumPy array with a structured dtype**
+
+In this example, we have a structured array with a data type
+that has four fields.  ``savearff`` takes the attribute names
+from the names of the fields in the data type.  This example
+also shows the use of a ``date`` attribute::
 
     >>> dt = np.dtype([('id', int), ('strength', float), ('key', 'U8'),
-    ...                ('time', np.dtype(np.datetime64, 's'))
+    ...                ('timestamp', np.dtype(np.datetime64, 's'))
     >>> m = np.array([(233, 1.75, 'QXX34', '2011-05-04T13:12:04'),
     ...               (154, 3.25, 'QXX99', '2011-05-04T13:47:43'),
     ...               (199, 2.16, 'QXZ55', '2011-05-04T14:41:02'),
@@ -46,7 +54,7 @@ taken from the names of the fields in the data type::
     @attribute id integer
     @attribute strength real
     @attribute key string
-    @attribute time date "yyyy-mm-dd hh:mm:ss"
+    @attribute timestamp date "yyyy-mm-dd hh:mm:ss"
 
     @data
     233,1.75,"QXX34","2011-12-04 01:12:04"
@@ -54,7 +62,11 @@ taken from the names of the fields in the data type::
     199,2.16,"QXZ55","2011-41-04 02:41:02"
     198,2.32,"QXZ59","2011-28-04 03:28:19"
 
-A SciPy sparse matrix::
+**SciPy sparse matrix**
+
+SciPy is not a required dependency of ``scarff``, but ``savearff``
+will recognize SciPy sparse matrices and write them to the ARFF file
+using the sparse format by default::
 
     >>> from scipy.sparse import csc_matrix
     >>> data = [10, 20, 30, 40, 50, 60]
@@ -88,6 +100,8 @@ A SciPy sparse matrix::
     {3 50, 4 60}
     {}
 
+**Sparse format with a NumPy array**
+
 A regular NumPy array can be written in the sparse format by giving
 the argument ``fileformat='sparse'``::
 
@@ -111,8 +125,10 @@ the argument ``fileformat='sparse'``::
     {}
     {1 89}
 
-A NumPy masked array; note that the masked values are converted
-to ``?`` in the ``@data`` section of the output::
+**NumPy masked array**
+
+``savearff`` recognizes NumPy masked arrays.  Masked values in
+the input array will be written as ``?`` in the ``@data`` section::
 
     >>> flux = np.ma.masked_array([[3.4, 2.1, 0.0, 3.4],
     ...                            [3.2, 4.8, 0.5, 3.7],
@@ -142,11 +158,13 @@ to ``?`` in the ``@data`` section of the output::
     3.2,4.8,0.5,3.7
     3.3,2.8,?,4.1
 
-A NumPy array with a structured data type with nested and array elements
-in the structure.  ``savearff`` flattens the data type and derives
-attribute names from the structured data type; note how the field names
-in the structured data type are used to produce the attribute names in
-the output::
+**NumPy array with nested data type**
+
+This example uses a NumPy array with a structured data type with nested
+and array elements in the structure.  ``savearff`` flattens the data type
+and derives attribute names from the structured data type; note how the
+field names in the structured data type are used to produce the attribute
+names in the output::
 
     >>> dt = np.dtype([('key', 'U4'),
     ...                ('position', [('x', np.float32), ('y', np.float32)]),
