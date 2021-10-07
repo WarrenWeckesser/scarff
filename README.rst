@@ -3,6 +3,15 @@ scarff
 
 An ARFF file writer that handles NumPy arrays and SciPy sparse matrices.
 
+Limitations:
+
+* ``relational`` attributes are not supported.
+* The ``dateformat`` parameter accepts a format string that defines
+  the output format for ``date`` attributes.  ARFF uses the Java
+  SimpleDataFormat specification for the format string.  Only a subset
+  of the SimpleDateFormat patterns are supported by ``savearff``.
+
+
 Examples
 --------
 
@@ -178,6 +187,33 @@ the argument ``fileformat='sparse'``::
     {}
     {1 89}
 
+**Missing data**
+
+The ``missing`` parameter allows values to be specified that
+correspond to missing values.  These will appear as ``?`` in the
+``@data`` section of the ARFF file.
+
+In this example, the value 999.25 indicates a missing value::
+
+    >>> x = np.array([[1.75, 7.93, 18.31],
+    ...               [2.44, 6.62, 32.11],
+    ...               [2.51, 2.25, 999.25],
+    ...               [2.64, 2.33, 999.25],
+    ...               [2.75, 2.83, 999.25]])
+    >>> savearff(sys.stdout, x, missing=[999.25], relation='readings')
+    @relation readings
+
+    @attribute f0 real
+    @attribute f1 real
+    @attribute f2 real
+
+    @data
+    1.75,7.93,18.31
+    2.44,6.62,32.11
+    2.51,2.25,?
+    2.64,2.33,?
+    2.75,2.83,?
+
 **NumPy masked array**
 
 ``savearff`` recognizes NumPy masked arrays.  Masked values in
@@ -260,6 +296,3 @@ For example::
     "A234",1.9,-3,6,7,2
     "A555",2.8,0.6,4,2.5,3
     "B431",2.7,8.6,4,2.8,0.2
-
-Currently ``savearff`` does not implement the generation of "relational"
-attributes.
