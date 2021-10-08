@@ -177,31 +177,42 @@ def _format(value, value_type):
     return out
 
 
+def _format_weight(w):
+    return '{' + _format(w, 'real') + '}'
+
+
 def _is_missing(value, missing):
     return _item_matches(value, missing) or np.ma.is_masked(value)
 
 
-def _write_dense_data(f, data, types, missing=None):
+def _write_dense_data(f, data, types, missing=None, weights=None):
     if missing is None:
         missing = []
-    for row in data:
+    # XXX There are probably optimizations of the string handling
+    # that can be done here...
+    for i, row in enumerate(data):
         line = ','.join(('?' if _is_missing(value, missing)
                          else _format(value, typ))
-                        for typ, value in zip(types, row)) + '\n'
-        f.write(line)
+                        for typ, value in zip(types, row))
+        if weights is not None:
+            line = ', '.join([line, _format_weight(weights[i])])
+        f.write(line + '\n')
 
 
-def _write_sparse_data(f, data, types, missing=None):
+def _write_sparse_data(f, data, types, missing=None, weights=None):
     if missing is None:
         missing = []
-    for row in data:
+    for i, row in enumerate(data):
         f.write('{')
         line = ', '.join((('%i ?' % k) if _is_missing(value, missing)
                           else ("%i " + _format(value, typ)) % (k,))
                          for k, (typ, value) in enumerate(zip(types, row))
                          if (np.ma.is_masked(value) or value != 0))
         f.write(line)
-        f.write('}\n')
+        f.write('}')
+        if weights is not None:
+            f.write(', ' + _format_weight(weights[i]))
+        f.write('\n')
 
 
 def _blankline(f, style):
@@ -211,14 +222,15 @@ def _blankline(f, style):
 
 def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
              nominal=None, fileformat=None, style=None, realformat="%g",
-             dateformat=None,
+             dateformat=None, weights=None,
              join='.', index_open='_', index_close='',
              index_base=0, multiindex_join=None, comments=None):
     """
     Write an array to an ARFF file.
 
-    This function does not support "relational" attribute types,
-    and it does not support instance weights.
+    This function does not support "relational" attribute types.
+    The set of patterns accepted by the ``dateformat`` parameter is
+    a subset of those accepted by the Java SimpleDataFormat.
 
     Parameters
     ----------
@@ -274,6 +286,10 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         will not be written in the @attribute lines, and the date format will
         be the default, which is the ISO-8601 combined date and time format
         `yyyy-MM-dd'T'HH:mm:ss`.
+    weights : sequence of numeric values
+        Instance weights.  If given, this must be a sequence of numeric
+        values with the same length as the first dimension of the input
+        array `a`.  If not given, no weights are written to the ARFF file.
     join : str, optional
         When `a` has a structured data type, the field names must be
         converted to flattened names.  This argument defines the string
@@ -314,7 +330,8 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         section below.
     comments : list of str
         The strings in this list are written as comments at the top
-        of the output file.  The comment character is added automatically.
+        of the output file.  The comment character and a space is added
+        automatically to the beginning of each string in `comments`.
 
     See Also
     --------
@@ -552,6 +569,15 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         # sparse matrix).  Convert it to a structured array.
         a = _object_to_array(a, attributes)
 
+    if weights is not None:
+        if issparse(a):
+            n = a.shape[0]
+        else:
+            n = len(a)
+        if len(weights) != n:
+            raise ValueError('The length of weights must equal the number of '
+                             'rows of the input array `a`.')
+
     if attributes is None:
         if a.dtype.names is None:
             attributes = ["f" + str(k) for k in range(a.shape[1])]
@@ -620,10 +646,11 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         # SciPy sparse array.  Densify one row at a time.
         for k in range(a.shape[0]):
             row = a.getrow(k).A
-            write_data(f, row, types=types, missing=missing)
+            w = None if weights is None else [weights[k]]
+            write_data(f, row, types=types, missing=missing, weights=w)
     else:
         # Numpy array
-        write_data(f, a, types=types, missing=missing)
+        write_data(f, a, types=types, missing=missing, weights=weights)
 
     if f != fileobj:
         f.close()

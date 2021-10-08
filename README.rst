@@ -6,7 +6,6 @@ An ARFF file writer that handles NumPy arrays and SciPy sparse matrices.
 Limitations:
 
 * ``relational`` attributes are not supported.
-* Instance weights are not supported.
 * The ``dateformat`` parameter accepts a format string that defines
   the output format for ``date`` attributes.  ARFF uses the Java
   SimpleDataFormat specification for the format string.  Only a subset
