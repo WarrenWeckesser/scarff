@@ -296,3 +296,33 @@ For example::
     "A234",1.9,-3,6,7,2
     "A555",2.8,0.6,4,2.5,3
     "B431",2.7,8.6,4,2.8,0.2
+
+**Instance weights**
+
+The ARFF format provides the option of saving an "instance weight" with
+each instance (i.e. each row) of the data.  ``savearff`` accepts a
+``weights`` argument containing a sequence of numbers.  The length of
+``weights`` must equal the number of rows to be written in the ``@DATA``
+section.  The weights are written to the file as an additional column in
+the ``@DATA`` section, with the values enclosed in curly brackets.
+
+For example::
+
+    >>> dt = np.dtype([('id', int), ('x', float), ('y', float)])
+    >>> samples = np.array([(300, 1.5, 1.8),
+    ...                     (300, 0.8, 2.4),
+    ...                     (304, 2.4, 0.5),
+    ...                     (304, 3.2, 0.2)], dtype=dt)
+    >>> weights = np.array([2, 2, 1, 1])
+    >>> savearff(sys.stdout, samples, relation='samples', weights=weights)
+    @relation samples
+
+    @attribute id integer
+    @attribute x real
+    @attribute y real
+
+    @data
+    300,1.5,1.8, {2}
+    300,0.8,2.4, {2}
+    304,2.4,0.5, {1}
+    304,3.2,0.2, {1}
