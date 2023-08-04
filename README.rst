@@ -8,7 +8,7 @@ Limitations:
 * ``relational`` attributes are not supported.
 * The ``dateformat`` parameter accepts a format string that defines
   the output format for ``date`` attributes.  ARFF uses the Java
-  SimpleDataFormat specification for the format string.  Only a subset
+  SimpleDateFormat specification for the format string.  Only a subset
   of the SimpleDateFormat patterns are supported by ``savearff``.
 
 

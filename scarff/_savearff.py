@@ -230,7 +230,7 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
 
     This function does not support "relational" attribute types.
     The set of patterns accepted by the ``dateformat`` parameter is
-    a subset of those accepted by the Java SimpleDataFormat.
+    a subset of those accepted by the Java SimpleDateFormat.
 
     Parameters
     ----------
@@ -279,8 +279,8 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         `realformat` is the format string used for *real* numeric values
         only.  The default is "%g".
     dateformat : str, optional
-        If given, this string must conform to the Java SimpleDataFormat
-        specification.  Only a subset of the SimpleDataFormat mini-language
+        If given, this string must conform to the Java SimpleDateFormat
+        specification.  Only a subset of the SimpleDateFormat mini-language
         is supported.  This is the format that will be written as the format
         in @attribute line for date attributes.  If it is not given, a format
         will not be written in the @attribute lines, and the date format will
