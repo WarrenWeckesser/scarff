@@ -10,7 +10,8 @@ Limitations:
   the output format for ``date`` attributes.  ARFF uses the Java
   SimpleDateFormat specification for the format string.  Only a subset
   of the SimpleDateFormat patterns are supported by ``savearff``.
-
+* The big limitation, of course, is that this package includes only a
+  writer.  It does not provide a function to read ARFF files.
 
 Examples
 --------
