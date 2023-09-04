@@ -155,7 +155,7 @@ def _item_matches(item, values):
 
 
 _fmt_map = {'integer': "%i",
-            'real': "%g",
+            'real': "%r",
             'string': '"%s"',
             'nominal': '"%s"',
             'date': None}
@@ -221,7 +221,7 @@ def _blankline(f, style):
 
 
 def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
-             nominal=None, fileformat=None, style=None, realformat="%g",
+             nominal=None, fileformat=None, style=None, realformat="%r",
              dateformat=None, weights=None,
              join='.', index_open='_', index_close='',
              index_base=0, multiindex_join=None, comments=None):
@@ -277,7 +277,7 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
         comments and the blank lines are not written to the file.
     realformat : str, optional
         `realformat` is the format string used for *real* numeric values
-        only.  The default is "%g".
+        only.  The default is "%r".
     dateformat : str, optional
         If given, this string must conform to the Java SimpleDateFormat
         specification.  Only a subset of the SimpleDateFormat mini-language
