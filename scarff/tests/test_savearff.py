@@ -39,7 +39,7 @@ class TestSaveArff:
         assert_equal(relation, 'XYZZY')
         assert_equal(attributes, ['a', 'b'])
         assert_equal(types, ['real', 'real'])
-        assert_array_equal(data, [[("%r" % value) for value in row]
+        assert_array_equal(data, [[("%s" % value) for value in row]
                                   for row in x])
         assert weights == [None]*len(x)
 
@@ -86,7 +86,7 @@ class TestSaveArff:
                           'integer', 'integer', 'integer']
         assert_equal(types, expected_types)
         expected_data = [[str(row['code'])] +
-                         [("%r" % v) for v in row['pos']] +
+                         [("%s" % v) for v in row['pos']] +
                          [("%g" % v) for v in row['color']]
                          for row in a]
         assert_equal(data, expected_data)
@@ -188,7 +188,7 @@ class TestSaveArff:
         assert_equal(relation, rel)
         assert_equal(attributes, m.dtype.names)
         assert_equal(types, ['real', 'real', 'integer'])
-        assert_equal(data, [[("%r" % (k,) if not np.ma.is_masked(k) else '?')
+        assert_equal(data, [[("%s" % (k,) if not np.ma.is_masked(k) else '?')
                              for k in row]
                             for row in m])
         assert weights == [None]*m.shape[0]
