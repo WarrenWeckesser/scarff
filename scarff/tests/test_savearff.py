@@ -59,7 +59,7 @@ class TestSaveArff:
             assert_equal(relation, rel)
             assert_equal(attributes, attrs)
             assert_equal(types, ['integer']*4)
-            assert_equal(data, [[str(k) for k in row] for row in s.A])
+            assert_equal(data, [[str(k) for k in row] for row in s.toarray()])
             assert weights == [None]*s.shape[0]
 
     def test_nested_dtype(self):

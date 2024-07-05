@@ -136,7 +136,7 @@ using the sparse format by default::
     >>> rows = [0, 2, 2, 3, 5, 5]
     >>> cols = [3, 1, 2, 2, 3, 4]
     >>> s = csc_matrix((data, (rows, cols)), shape=(7, 5))
-    >>> s.A
+    >>> s.toarray()
     array([[ 0,  0,  0, 10,  0],
            [ 0,  0,  0,  0,  0],
            [ 0, 20, 30,  0,  0],
