@@ -483,7 +483,7 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
 
     >>> from scipy.sparse import csr_matrix
     >>> s = csr_matrix(((10, 20, 30), ((0, 2, 2), (2, 0, 1))), shape=(3, 4))
-    >>> s.A
+    >>> s.toarray()
     array([[ 0,  0, 10,  0],
            [ 0,  0,  0,  0],
            [20, 30,  0,  0]])
@@ -645,7 +645,7 @@ def savearff(fileobj, a, *, attributes=None, relation=None,  missing=None,
     if issparse(a):
         # SciPy sparse array.  Densify one row at a time.
         for k in range(a.shape[0]):
-            row = a.getrow(k).A
+            row = a.getrow(k).toarray()
             w = None if weights is None else [weights[k]]
             write_data(f, row, types=types, missing=missing, weights=w)
     else:
