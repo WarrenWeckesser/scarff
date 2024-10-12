@@ -6,30 +6,34 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        numpy-version: ['1.22.4', '1.23.5', '1.24.4', '1.25.2', '1.26.4']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        numpy-version: ['1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.2']
         exclude:
-        - python-version: '3.8'
-          numpy-version: '1.25.2'
-        - python-version: '3.8'
-          numpy-version: '1.26.4'
-        - python-version: '3.11'
-          numpy-version: '1.22.4'
-        - python-version: '3.12'
-          numpy-version: '1.22.4'
-        - python-version: '3.12'
-          numpy-version: '1.23.5'
-        - python-version: '3.12'
-          numpy-version: '1.24.4'
-        - python-version: '3.12'
-          numpy-version: '1.25.2'
+        - numpy-version: '1.24.4'
+          python-version: '3.12'
+        - numpy-version: '1.24.4'
+          python-version: '3.13'
+
+        - numpy-version: '1.25.2'
+          python-version: '3.12'
+        - numpy-version: '1.25.2'
+          python-version: '3.13'
+
+        - numpy-version: '1.26.4'
+          python-version: '3.12'
+
+        - numpy-version: '2.0.2'
+          python-version: '3.13'
+
+        - numpy-version: '2.1.2'
+          python-version: '3.9'
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Set up ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -49,20 +53,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.11', '3.12']
-        numpy-version: ['1.23.5', '1.24.4', '1.25.2', '1.26.4']
+        python-version: ['3.11', '3.12', '3.13']
+        numpy-version: ['1.25.2', '1.26.4', '2.0.2', '2.1.2']
         exclude:
-          - numpy-version: '1.25.2'
-            python-version: '3.12'
-          - numpy-version: '1.24.4'
-            python-version: '3.12'
-          - numpy-version: '1.23.5'
-            python-version: '3.12'
+        - numpy-version: '1.25.2'
+          python-version: '3.12'
+        - numpy-version: '1.25.2'
+          python-version: '3.13'
+
+        - numpy-version: '1.26.4'
+          python-version: '3.12'
+
+        - numpy-version: '2.0.2'
+          python-version: '3.13'
 
     steps:
     - uses: actions/checkout@v4
     - name: Set up ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -70,33 +78,6 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install pytest
         python -m pip install numpy==${{ matrix.numpy-version }}
-    - name: Install scarff
-      run: |
-        python -m pip install .
-    - name: Test with pytest
-      run: |
-        python -m pytest
-
-  numpy2:
-    strategy:
-      matrix:
-        python-version: ['3.11', '3.12']
-        numpy-version: ['2.0.0']
-        scipy-version: ['1.13.0']
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        python -m pip install pytest
-        python -m pip install numpy==${{ matrix.numpy-version }} scipy==${{ matrix.scipy-version }}
     - name: Install scarff
       run: |
         python -m pip install .
